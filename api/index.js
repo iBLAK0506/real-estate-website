@@ -16,7 +16,9 @@ const port = process.env.port || 3000;
 app.listen(port, () => {
   console.log(`server is running on port ${port}`);
 });
-
+app.get("/", (req, res) => {
+  res.status(200).json({ message: "hello world" });
+});
 mongoose
   .connect(process.env.MONGO_STRING_URL, {
     serverSelectionTimeoutMS: 10000, // optional
