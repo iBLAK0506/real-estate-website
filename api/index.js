@@ -12,6 +12,11 @@ app.use(express.json());
 
 app.use(cookieParser());
 
+const port = process.env.port || 3000;
+app.listen(port, () => {
+  console.log(`server is running on port ${port}`);
+});
+
 mongoose
   .connect(process.env.MONGO_STRING_URL, {
     serverSelectionTimeoutMS: 10000, // optional
