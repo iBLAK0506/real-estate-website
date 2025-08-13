@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { serverUrl } from "../constant";
 
 export default function SignUp() {
   const [formData, setFormData] = useState({
@@ -27,7 +28,7 @@ export default function SignUp() {
     setError(null);
 
     try {
-      const res = await fetch("/api/auth/signup", {
+      const res = await fetch(`${serverUrl}/api/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData), // ✅ send full formData

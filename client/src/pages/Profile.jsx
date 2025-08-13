@@ -12,6 +12,7 @@ import {
   updateUserSuccess,
   updateUserFailure,
 } from "../redux/user/userSlice.js";
+import { serverUrl } from "../constant.js";
 
 export default function Profile() {
   const fileRef = useRef(null);
@@ -74,14 +75,17 @@ export default function Profile() {
     e.preventDefault();
     try {
       dispatch(updateUserStart());
-      const res = await fetch(`/api/user/update/${currentUser._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include", // send cookies with request
-        body: JSON.stringify(formData),
-      });
+      const res = await fetch(
+        `${serverUrl}/api/user/update/${currentUser._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include", // send cookies with request
+          body: JSON.stringify(formData),
+        }
+      );
 
       const data = await res.json();
       if (data.success === false) {
