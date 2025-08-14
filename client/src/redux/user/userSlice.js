@@ -1,7 +1,10 @@
-import { createSlice, current } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
+
+// Load user from localStorage if available
+const storedUser = localStorage.getItem("currentUser");
 
 const initialState = {
-  currentUser: null,
+  currentUser: storedUser ? JSON.parse(storedUser) : null,
   error: null,
   loading: false,
 };
@@ -14,9 +17,12 @@ const userSlice = createSlice({
       state.loading = true;
     },
     signInSuccess: (state, action) => {
-      state.currentUser = action.payload;
+      // If API response contains "user", store only that object
+      const payload = action.payload.user || action.payload;
+      state.currentUser = payload;
       state.loading = false;
       state.error = null;
+      localStorage.setItem("currentUser", JSON.stringify(payload));
     },
     signInFailure: (state, action) => {
       state.error = action.payload;
@@ -26,13 +32,22 @@ const userSlice = createSlice({
       state.loading = true;
     },
     updateUserSuccess: (state, action) => {
-      state.currentUser = action.payload;
+      // Same flattening logic here
+      const payload = action.payload.user || action.payload;
+      state.currentUser = payload;
       state.loading = false;
       state.error = null;
+      localStorage.setItem("currentUser", JSON.stringify(payload));
     },
     updateUserFailure: (state, action) => {
       state.error = action.payload;
       state.loading = false;
+    },
+    signOut: (state) => {
+      state.currentUser = null;
+      state.error = null;
+      state.loading = false;
+      localStorage.removeItem("currentUser");
     },
   },
 });
@@ -44,6 +59,7 @@ export const {
   updateUserFailure,
   updateUserSuccess,
   updateUserStart,
+  signOut,
 } = userSlice.actions;
 
 export default userSlice.reducer;

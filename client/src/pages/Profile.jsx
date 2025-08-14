@@ -17,12 +17,15 @@ import { serverUrl } from "../constant.js";
 export default function Profile() {
   const fileRef = useRef(null);
   const currentUser = useSelector((state) => state.user?.currentUser);
+  const loading = useSelector((state) => state.user?.loading);
+  const error = useSelector((state) => state.user?.error);
 
   const [file, setFile] = useState(null);
   const [filePreview, setFilePreview] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadError, setUploadError] = useState(null);
   const [formData, setFormData] = useState({});
+  const [updateSuccess, setUpdateSuccess] = useState(false);
   const dispatch = useDispatch();
 
   // Trigger upload when file changes
@@ -73,6 +76,12 @@ export default function Profile() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!currentUser?._id) {
+      console.error("No user ID found. Aborting update request.");
+      return;
+    }
+
     try {
       dispatch(updateUserStart());
       const res = await fetch(
@@ -93,10 +102,19 @@ export default function Profile() {
         return;
       }
       dispatch(updateUserSuccess(data));
+      setUpdateSuccess(true);
     } catch (error) {
       dispatch(updateUserFailure(error.message));
     }
   };
+
+  if (!currentUser) {
+    return (
+      <div className="p-3 max-w-lg mx-auto text-center">
+        <h1 className="text-2xl font-semibold mt-10">Please sign in</h1>
+      </div>
+    );
+  }
 
   return (
     <div className="p-3 max-w-lg mx-auto">
@@ -149,16 +167,21 @@ export default function Profile() {
           id="password"
         />
         <button
+          disabled={loading}
           type="submit"
           className="bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 cursor-pointer disabled:opacity-80"
         >
-          Update
+          {loading ? `Loading...` : `Update`}
         </button>
       </form>
       <div className="flex justify-between mt-5">
         <span className="text-red-700 cursor-pointer">Delete Account</span>
         <span className="text-red-700 cursor-pointer">Sign Out</span>
       </div>
+      <p className="text-red-700 mt-5">{error ? error : ``}</p>
+      <p className="text-green-700 mt-5">
+        {updateSuccess ? `User is updated successfully!` : ``}
+      </p>
     </div>
   );
 }
