@@ -10,7 +10,7 @@ import OAuth from "../components/OAuth";
 import { serverUrl } from "../constant";
 
 export default function SignIn() {
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.user);
@@ -37,20 +37,17 @@ export default function SignIn() {
         body: JSON.stringify(formData),
       });
 
-      // Read response text first to prevent JSON parse error
-      const text = await res.text();
-      const data = text ? JSON.parse(text) : {};
+      const data = await res.json();
 
       if (!res.ok) {
-        // If backend does not send message, fallback to "User not found"
-        dispatch(signInFailure(data.message || "User not found"));
+        dispatch(signInFailure(data.message || "Invalid email or password"));
         return;
       }
 
       dispatch(signInSuccess(data));
-      navigate("/"); // redirect after successful login
+      navigate("/");
     } catch (err) {
-      dispatch(signInFailure(err.message));
+      dispatch(signInFailure(err.message || "Network error"));
     }
   };
 
@@ -64,6 +61,7 @@ export default function SignIn() {
           placeholder="Email"
           className="border p-3 rounded-lg bg-white"
           id="email"
+          value={formData.email}
           onChange={handleChange}
           required
         />
@@ -72,6 +70,7 @@ export default function SignIn() {
           placeholder="Password"
           className="border p-3 rounded-lg bg-white"
           id="password"
+          value={formData.password}
           onChange={handleChange}
           required
         />

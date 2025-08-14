@@ -10,22 +10,36 @@ import cors from "cors";
 
 const app = express();
 
-// CORS config to allow frontend & cookies
+// Allowed origins
+const allowedOrigins = [
+  "http://localhost:5173", // Local Vite dev server
+  "https://real-estate-website-five-mocha.vercel.app", // Old production domain
+  "https://real-estate-website-as03m8uel-iblaks-projects.vercel.app", // Current production domain
+];
+
+// CORS setup
 app.use(
   cors({
-    origin: "https://real-estate-website-five-mocha.vercel.app", // your frontend URL
-    credentials: true, // allow cookies
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("CORS not allowed for this origin"));
+      }
+    },
+    credentials: true,
   })
 );
 
-// Middleware
 app.use(express.json());
 app.use(cookieParser());
 
-// Routes
+// Test route
 app.get("/", (req, res) => {
   res.status(200).json({ message: "hello world" });
 });
+
+// Routes
 app.use("/api/user", userRouter);
 app.use("/api/auth", authRouter);
 
@@ -40,7 +54,6 @@ app.use((error, req, res, next) => {
   });
 });
 
-// Connect to MongoDB and start server
 const port = process.env.PORT || 3000;
 
 mongoose

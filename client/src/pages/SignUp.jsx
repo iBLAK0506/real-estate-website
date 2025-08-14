@@ -12,16 +12,14 @@ export default function SignUp() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Handle input changes
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.id]: e.target.value,
     });
-    setError(null); // clear error when typing
+    setError(null);
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -32,14 +30,14 @@ export default function SignUp() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify(formData), // ✅ send full formData
+        body: JSON.stringify(formData),
       });
 
       const data = await res.json();
 
       if (res.ok) {
         setLoading(false);
-        navigate("/sign-in"); // ✅ redirect after success
+        navigate("/sign-in");
       } else {
         setLoading(false);
         setError(data.message || "Signup failed");
