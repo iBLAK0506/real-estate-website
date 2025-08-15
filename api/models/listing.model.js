@@ -50,9 +50,15 @@ const listingSchema = new mongoose.Schema(
       type: Array,
       required: true,
     },
+    userRef: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User", // must match your User model name
+      required: true,
+    },
   },
   { timestamps: true }
 );
-const Listing = mongoose.model(`Listing`, listingSchema);
+
+const Listing = mongoose.model("Listing", listingSchema);
 
 export default Listing;
